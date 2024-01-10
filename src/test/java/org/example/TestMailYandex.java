@@ -16,28 +16,28 @@ public class TestMailYandex extends TestBase{
         String  user = properties.getProperty("mail.user");
         String password = properties.getProperty("mail.password");
         String host = properties.getProperty("mail.host");
-        //Настройка почтового сервера:
+        //РќР°СЃС‚СЂРѕР№РєР° РїРѕС‡С‚РѕРІРѕРіРѕ СЃРµСЂРІРµСЂР°:
         Properties prop = new Properties();
         prop.put("mail.store.protocol","imaps");//SSL
-        //создать хранилище сообщений:
+        //СЃРѕР·РґР°С‚СЊ С…СЂР°РЅРёР»РёС‰Рµ СЃРѕРѕР±С‰РµРЅРёР№:
         Store store = Session.getInstance(prop).getStore();
-        store.connect(host,user, password);// подключение хранилища
-        //открытие почтового ящика и получение сообщений
-        Folder inbox = store.getFolder("INBOX");// создание папки ВХОДЯЩИЕ
+        store.connect(host,user, password);// РїРѕРґРєР»СЋС‡РµРЅРёРµ С…СЂР°РЅРёР»РёС‰Р°
+        //РѕС‚РєСЂС‹С‚РёРµ РїРѕС‡С‚РѕРІРѕРіРѕ СЏС‰РёРєР° Рё РїРѕР»СѓС‡РµРЅРёРµ СЃРѕРѕР±С‰РµРЅРёР№
+        Folder inbox = store.getFolder("INBOX");// СЃРѕР·РґР°РЅРёРµ РїР°РїРєРё Р’РҐРћР”РЇР©РР•
         inbox.open(Folder.READ_ONLY);
 
-        System.out.println("Количество писем: " + inbox.getMessageCount());
+        System.out.println("РљРѕР»РёС‡РµСЃС‚РІРѕ РїРёСЃРµРј: " + inbox.getMessageCount());
 
-        //Поиск последнего сообщения
+        //РџРѕРёСЃРє РїРѕСЃР»РµРґРЅРµРіРѕ СЃРѕРѕР±С‰РµРЅРёСЏ
         Message message = inbox.getMessage(inbox.getMessageCount());
-        Multipart multipart = (Multipart) message.getContent(); // сохранение письма в структурированный вид
+        Multipart multipart = (Multipart) message.getContent(); // СЃРѕС…СЂР°РЅРµРЅРёРµ РїРёСЃСЊРјР° РІ СЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРЅС‹Р№ РІРёРґ
         System.out.println(multipart.getContentType());
         BodyPart body = multipart.getBodyPart(0);
         System.out.println(body.getContent());
 
-        //поиск определенного сообщения:
+        //РїРѕРёСЃРє РѕРїСЂРµРґРµР»РµРЅРЅРѕРіРѕ СЃРѕРѕР±С‰РµРЅРёСЏ:
         Message[] messages = inbox.getMessages();
-        String subjectToFind = "Пароль ГГИС изменен!";//тема сообщения
+        String subjectToFind = "РџР°СЂРѕР»СЊ Р“Р“РРЎ РёР·РјРµРЅРµРЅ!";//С‚РµРјР° СЃРѕРѕР±С‰РµРЅРёСЏ
         Message foundMessage = null;
         for(Message message1: messages) {
             if(message1.getSubject().equals(subjectToFind)){
@@ -46,11 +46,11 @@ public class TestMailYandex extends TestBase{
             }
         }
 
-        //Проверка, найдено ли сообщение
+        //РџСЂРѕРІРµСЂРєР°, РЅР°Р№РґРµРЅРѕ Р»Рё СЃРѕРѕР±С‰РµРЅРёРµ
         if(foundMessage!=null){
-            System.out.println("Сообщение найдено");
+            System.out.println("РЎРѕРѕР±С‰РµРЅРёРµ РЅР°Р№РґРµРЅРѕ");
         } else {
-            System.out.println("Сообщение не найдено");
+            System.out.println("РЎРѕРѕР±С‰РµРЅРёРµ РЅРµ РЅР°Р№РґРµРЅРѕ");
         }
 
         inbox.close(false);
