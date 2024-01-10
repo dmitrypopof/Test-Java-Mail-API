@@ -24,25 +24,25 @@ public class TestMailYandex extends TestBase{
 
         Properties prop = new Properties();
         prop.put("mail.store.protocol","imaps");//SSL
-        //создать хранилище сообщений:
+        //СЃРѕР·РґР°С‚СЊ С…СЂР°РЅРёР»РёС‰Рµ СЃРѕРѕР±С‰РµРЅРёР№:
         Store store = Session.getInstance(prop).getStore();
-        store.connect(host,user, password);// подключение хранилища
-        Folder inbox = store.getFolder("INBOX");// ПАПКА ВХОДЯЩИЕ
+        store.connect(host,user, password);// РїРѕРґРєР»СЋС‡РµРЅРёРµ С…СЂР°РЅРёР»РёС‰Р°
+        Folder inbox = store.getFolder("INBOX");// РџРђРџРљРђ Р’РҐРћР”РЇР©РР•
         inbox.open(Folder.READ_WRITE);
 
-        System.out.println("Количество писем: " + inbox.getMessageCount());
+        System.out.println("РљРѕР»РёС‡РµСЃС‚РІРѕ РїРёСЃРµРј: " + inbox.getMessageCount());
 
-        //Поиск последнего сообщения
+        //РџРѕРёСЃРє РїРѕСЃР»РµРґРЅРµРіРѕ СЃРѕРѕР±С‰РµРЅРёСЏ
         Message message = inbox.getMessage(inbox.getMessageCount());
 
-        Multipart multipart = (Multipart) message.getContent(); // сохранение письма в структурированный вид
+        Multipart multipart = (Multipart) message.getContent(); // СЃРѕС…СЂР°РЅРµРЅРёРµ РїРёСЃСЊРјР° РІ СЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРЅС‹Р№ РІРёРґ
         System.out.println(multipart.getContentType());
 
         BodyPart body = multipart.getBodyPart(0);
         System.out.println(body.getContent());
 
 String textActual = body.getContent().toString();
-        System.out.println("Текст сообщения: " + textActual);
+        System.out.println("РўРµРєСЃС‚ СЃРѕРѕР±С‰РµРЅРёСЏ: " + textActual);
 
     }
 }
