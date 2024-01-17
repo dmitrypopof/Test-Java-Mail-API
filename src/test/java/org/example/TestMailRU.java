@@ -1,17 +1,16 @@
 package org.example;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import javax.mail.*;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
 public class TestMailRU {
     @Test
+    @DisplayName("Чтение входящего сообщения")
     public void testLastMail() throws IOException {
         FileInputStream fileInputStream = new FileInputStream("config.properties");
         Properties properties = new Properties();
