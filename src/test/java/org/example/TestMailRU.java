@@ -10,7 +10,7 @@ import java.util.Properties;
 
 public class TestMailRU {
     @Test
-    @DisplayName("Р§С‚РµРЅРёРµ РІС…РѕРґСЏС‰РµРіРѕ СЃРѕРѕР±С‰РµРЅРёСЏ")
+    @DisplayName("Чтение входящего сообщения")
     public void testLastMail() throws IOException {
         FileInputStream fileInputStream = new FileInputStream("config.properties");
         Properties properties = new Properties();
@@ -19,7 +19,7 @@ public class TestMailRU {
         String password = properties.getProperty("mail.password");
         String host = properties.getProperty("mail.host");
 
-        // РќР°СЃС‚СЂРѕР№РєР° СЃРІРѕР№СЃС‚РІ
+        // Настройка свойств
         Properties props = new Properties();
         props.put("mail.store.protocol", "imaps");
         props.put("mail.imaps.host", host);
@@ -27,34 +27,34 @@ public class TestMailRU {
         props.put("mail.imaps.ssl.enable", "true");
 
         try{
-            // РЈСЃС‚Р°РЅРѕРІРєР° СЃРµСЃСЃРёРё
+            // Установка сессии
             Session session = Session.getDefaultInstance(props);
 
-            // РџРѕРґРєР»СЋС‡РµРЅРёРµ Рє РїРѕС‡С‚РѕРІРѕРјСѓ СЃРµСЂРІРµСЂСѓ
+            // Подключение к почтовому серверу
             Store store = session.getStore("imaps");
             store.connect(host, user, password);
 
-            // РћС‚РєСЂС‹С‚РёРµ РїР°РїРєРё "INBOX"
+            // Открытие папки "INBOX"
             Folder inbox = store.getFolder("INBOX");
             inbox.open(Folder.READ_ONLY);
 
-            // РџРѕР»СѓС‡РµРЅРёРµ РїРѕСЃР»РµРґРЅРµРіРѕ РїРёСЃСЊРјР°
+            // Получение последнего письма
             Message[] messages = inbox.getMessages();
             Message lastMessage = messages[messages.length - 1];
 
-            //РўРµРјР° РїРѕСЃР»РµРґРЅРµРіРѕ СЃРѕРѕР±С‰РµРЅРёСЏ:
+            //Тема последнего сообщения:
             System.out.println("Subject:\n"+ lastMessage.getSubject());
 
-            //РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ РїРѕСЃР»РµРґРЅРµРіРѕ СЃРѕРѕР±С‰РµРЅРёСЏ РІ String c РїРѕРјРѕС‰СЊСЋ РјРµС‚РѕРґР° getTextFromMimeMultipart
+            //Преобразование последнего сообщения в String c помощью метода getTextFromMimeMultipart
             String content = getTextFromMimeMultipart((Multipart) lastMessage.getContent());
             System.out.println("Content:\n" + content);
-            // Р—Р°РєСЂС‹С‚РёРµ СЃРѕРµРґРёРЅРµРЅРёСЏ
+            // Закрытие соединения
             inbox.close(false);
             store.close();
         }catch (Exception e){e.printStackTrace();}
     }
 
-    //РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ РїРѕСЃР»РµРґРЅРµРіРѕ СЃРѕРѕР±С‰РµРЅРёСЏ РІ String:
+    //Преобразование последнего сообщения в String:
     public static String getTextFromMimeMultipart(Multipart mimeMultipart) throws MessagingException, IOException {
         int count = mimeMultipart.getCount();
         StringBuilder result = new StringBuilder();
