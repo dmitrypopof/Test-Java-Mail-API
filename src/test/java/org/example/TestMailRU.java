@@ -12,7 +12,7 @@ import java.util.Properties;
 
 public class TestMailRU {
     @Test
-    @DisplayName("Р§С‚РµРЅРёРµ РІС…РѕРґСЏС‰РµРіРѕ СЃРѕРѕР±С‰РµРЅРёСЏ")
+    @DisplayName("Чтение входящего сообщения")
     public void testLastMail() throws IOException {
         FileInputStream fileInputStream = new FileInputStream("config.properties");
         Properties properties = new Properties();
@@ -21,7 +21,7 @@ public class TestMailRU {
         String password = properties.getProperty("mail.password");
         String host = properties.getProperty("mail.host");
 
-        // РќР°СЃС‚СЂРѕР№РєР° СЃРІРѕР№СЃС‚РІ
+        // Настройка свойств
         Properties props = new Properties();
         props.put("mail.store.protocol", "imaps");
         props.put("mail.imaps.host", host);
@@ -29,34 +29,34 @@ public class TestMailRU {
         props.put("mail.imaps.ssl.enable", "true");
 
         try{
-            // РЈСЃС‚Р°РЅРѕРІРєР° СЃРµСЃСЃРёРё
+            // Установка сессии
             Session session = Session.getDefaultInstance(props);
 
-            // РџРѕРґРєР»СЋС‡РµРЅРёРµ Рє РїРѕС‡С‚РѕРІРѕРјСѓ СЃРµСЂРІРµСЂСѓ
+            // Подключение к почтовому серверу
             Store store = session.getStore("imaps");
             store.connect(host, user, password);
 
-            // РћС‚РєСЂС‹С‚РёРµ РїР°РїРєРё "INBOX"
+            // Открытие папки "INBOX"
             Folder inbox = store.getFolder("INBOX");
             inbox.open(Folder.READ_ONLY);
 
-            /// РџРѕР»СѓС‡РµРЅРёРµ РїРѕСЃР»РµРґРЅРµРіРѕ РїРёСЃСЊРјР°
+            /// Получение последнего письма
             Message[] messages = inbox.getMessages();
             Message lastMessage = messages[messages.length - 1];
 
-            //РўРµРјР° РїРѕСЃР»РµРґРЅРµРіРѕ СЃРѕРѕР±С‰РµРЅРёСЏ:
+            //Тема последнего сообщения:
             System.out.println("Subject:\n"+ lastMessage.getSubject());
 
-            //РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ РїРѕСЃР»РµРґРЅРµРіРѕ СЃРѕРѕР±С‰РµРЅРёСЏ РІ String c РїРѕРјРѕС‰СЊСЋ РјРµС‚РѕРґР° getTextFromMimeMultipart
+            //Преобразование последнего сообщения в String c помощью метода getTextFromMimeMultipart
             String content = getTextFromMimeMultipart((Multipart) lastMessage.getContent());
             System.out.println("Content:\n" + content);
-            // Р—Р°РєСЂС‹С‚РёРµ СЃРѕРµРґРёРЅРµРЅРёСЏ
+            // Закрытие соединения
             inbox.close(false);
             store.close();
         }catch (Exception e){e.printStackTrace();}
     }
 
-    //РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ РїРѕСЃР»РµРґРЅРµРіРѕ СЃРѕРѕР±С‰РµРЅРёСЏ РІ String:
+    //Преобразование последнего сообщения в String:
     public static String getTextFromMimeMultipart(Multipart mimeMultipart) throws MessagingException, IOException {
         int count = mimeMultipart.getCount();
         StringBuilder result = new StringBuilder();
@@ -72,7 +72,7 @@ public class TestMailRU {
     }
 
     @Test
-    @DisplayName("РЈРґР°Р»РµРЅРёРµ РІСЃРµС… СЃРѕРѕР±С‰РµРЅРёР№")
+    @DisplayName("Удаление всех сообщений")
     public void testAllDeleteInboxMail() throws IOException {
         FileInputStream fileInputStream = new FileInputStream("config.properties");
         Properties properties = new Properties();
@@ -81,46 +81,50 @@ public class TestMailRU {
         String password = properties.getProperty("mail.password");
         String host = properties.getProperty("mail.host");
 
-        // РќР°СЃС‚СЂРѕР№РєР° СЃРІРѕР№СЃС‚РІ
+        // Настройка свойств
         Properties props = new Properties();
         props.put("mail.store.protocol", "imaps");
         props.put("mail.imaps.host", host);
         props.put("mail.imaps.port", "993");
         props.put("mail.imaps.ssl.enable", "true");
         try{
-            // РЈСЃС‚Р°РЅРѕРІРєР° СЃРµСЃСЃРёРё
+            // Установка сессии
             Session session = Session.getDefaultInstance(props);
 
-            // РџРѕРґРєР»СЋС‡РµРЅРёРµ Рє РїРѕС‡С‚РѕРІРѕРјСѓ СЃРµСЂРІРµСЂСѓ
+            // Создание объекта Store и подключение к почтовому серверу
             Store store = session.getStore("imaps");
             store.connect(host, user, password);
 
-            // РћС‚РєСЂС‹С‚РёРµ РїР°РїРєРё "INBOX"
+            // Открытие папки "INBOX"
             Folder inbox = store.getFolder("INBOX");
             inbox.open(Folder.READ_WRITE);
 
-            // РџРѕР»СѓС‡РµРЅРёРµ РІСЃРµС… СЃРѕРѕР±С‰РµРЅРёР№ РІ РїР°РїРєРµ
+            // Получение всех сообщений в папке
             Message[]messages = inbox.search( new FlagTerm(new Flags(Flags.Flag.SEEN), false));
 
-            // РЈРґР°Р»РµРЅРёРµ РєР°Р¶РґРѕРіРѕ СЃРѕРѕР±С‰РµРЅРёСЏ
+            // Удаление каждого сообщения
             for (Message message : messages) {
                 message.setFlag(Flags.Flag.DELETED, true);
             }
-            // Р—Р°РєСЂС‹С‚РёРµ РїР°РїРєРё Рё СЃРѕС…СЂР°РЅРµРЅРёРµ РёР·РјРµРЅРµРЅРёР№
-            inbox.close(true);
 
-            // Р—Р°РєСЂС‹С‚РёРµ СЃРѕРµРґРёРЅРµРЅРёСЏ СЃ РїРѕС‡С‚РѕРІС‹Рј СЃРµСЂРІРµСЂРѕРј
+            // Закрытие папки и сохранение изменений
+            inbox.close(true);
+            // Закрытие соединения с почтовым сервером
             store.close();
 
-            System.out.println("Р’СЃРµ СЃРѕРѕР±С‰РµРЅРёСЏ РІРѕ РІС…РѕРґСЏС‰РёС… СѓРґР°Р»РµРЅС‹.");
+            System.out.println("Все сообщения во входящих удалены.");
 
-        }catch (Exception e){e.printStackTrace();}
+        }catch (NoSuchProviderException e) {
+            e.printStackTrace();
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
-    @DisplayName("РЈРґР°Р»РµРЅРёРµ СЃРѕРѕР±С‰РµРЅРёР№ СЃ РѕРїСЂРµРґРµР»РµРЅРЅРѕР№ С‚РµРјРѕР№")
+    @DisplayName("Удаление сообщений с определенной темой")
     public void testDeleteInboxMail() throws IOException {
-        String text = "РџР°СЂРѕР»СЊ Р“Р“РРЎ РёР·РјРµРЅРµРЅ!";
+        String text = "Стать системным администратором";
         FileInputStream fileInputStream = new FileInputStream("config.properties");
         Properties properties = new Properties();
         properties.load(fileInputStream);
@@ -128,44 +132,84 @@ public class TestMailRU {
         String password = properties.getProperty("mail.password");
         String host = properties.getProperty("mail.host");
 
-        // РќР°СЃС‚СЂРѕР№РєР° СЃРІРѕР№СЃС‚РІ
+        // Настройка свойств
+        Properties props = new Properties();
+        props.put("mail.store.protocol", "imaps");
+        props.put("mail.pop3.host", host);
+        props.put("mail.pop3.port", "995");
+        props.put("mail.pop3.starttls.enable", "true");
+
+        try{
+            // Установка сессии
+            Session session = Session.getDefaultInstance(props);
+session.setDebug(true); // подключение логов
+            // Подключение к почтовому серверу
+            Store store = session.getStore("pop3s");
+            store.connect(host, user, password);
+
+            // Открытие папки "INBOX"
+            Folder inbox = store.getFolder("INBOX");
+            inbox.open(Folder.READ_WRITE);
+
+            // Получение всех сообщений в папке
+            Message[]messages = inbox.search( new FlagTerm(new Flags(Flags.Flag.SEEN), false));
+
+            // Удаление каждого сообщения
+            for (Message message : messages) {
+                if(message.getSubject().contains(text)) {
+                    message.setFlag(Flags.Flag.DELETED, true);
+                    inbox.expunge();
+                }
+                //inbox.expunge(); //Этот метод физически удаляет сообщения, отмеченные для удаления
+            }
+
+
+            // Закрытие папки и сохранение изменений
+            inbox.close(true);
+
+            // Закрытие соединения с почтовым сервером
+            store.close();
+
+            System.out.println("Все сообщения во входящих удалены c темой: " + text);
+
+        }catch (Exception e){e.printStackTrace();}
+    }
+
+    @Test
+    @DisplayName("Узнать тип контента в письме")
+    public void getTypeContent() throws IOException, MessagingException {
+        FileInputStream fileInputStream = new FileInputStream("config.properties");
+        Properties properties = new Properties();
+        properties.load(fileInputStream);
+        String  user = properties.getProperty("mail.user");
+        String password = properties.getProperty("mail.password");
+        String host = properties.getProperty("mail.host");
+
+        // Настройка свойств
         Properties props = new Properties();
         props.put("mail.store.protocol", "imaps");
         props.put("mail.imaps.host", host);
         props.put("mail.imaps.port", "993");
         props.put("mail.imaps.ssl.enable", "true");
-        try{
-            // РЈСЃС‚Р°РЅРѕРІРєР° СЃРµСЃСЃРёРё
-            Session session = Session.getDefaultInstance(props);
 
-            // РџРѕРґРєР»СЋС‡РµРЅРёРµ Рє РїРѕС‡С‚РѕРІРѕРјСѓ СЃРµСЂРІРµСЂСѓ
-            Store store = session.getStore("imaps");
-            store.connect(host, user, password);
+        // Установка сессии
+        Session session = Session.getDefaultInstance(props);
 
-            // РћС‚РєСЂС‹С‚РёРµ РїР°РїРєРё "INBOX"
-            Folder inbox = store.getFolder("INBOX");
-            inbox.open(Folder.READ_WRITE);
+        // Подключение к почтовому серверу
+        Store store = session.getStore("imaps");
+        store.connect(host, user, password);
 
-            // РџРѕР»СѓС‡РµРЅРёРµ РІСЃРµС… СЃРѕРѕР±С‰РµРЅРёР№ РІ РїР°РїРєРµ
-            Message[]messages = inbox.search( new FlagTerm(new Flags(Flags.Flag.SEEN), false));
+        // Открытие папки "INBOX"
+        Folder inbox = store.getFolder("INBOX");
+        inbox.open(Folder.READ_WRITE);
 
-            // РЈРґР°Р»РµРЅРёРµ РєР°Р¶РґРѕРіРѕ СЃРѕРѕР±С‰РµРЅРёСЏ
-            for (Message message : messages) {
-                if(message.getSubject().contains(text)) {
-                    message.setFlag(Flags.Flag.DELETED, true);
-                }
-            }
+        System.out.println("Количество писем: " + inbox.getMessageCount());
 
+        Message message = inbox.getMessage(inbox.getMessageCount());
+        Multipart multipart = (Multipart) message.getContent();
+        System.out.println(message.getSubject().toString());
+        System.out.println("Тип контента: "+ multipart.getContentType());
 
-            // Р—Р°РєСЂС‹С‚РёРµ РїР°РїРєРё Рё СЃРѕС…СЂР°РЅРµРЅРёРµ РёР·РјРµРЅРµРЅРёР№
-            inbox.close(true);
-
-            // Р—Р°РєСЂС‹С‚РёРµ СЃРѕРµРґРёРЅРµРЅРёСЏ СЃ РїРѕС‡С‚РѕРІС‹Рј СЃРµСЂРІРµСЂРѕРј
-            store.close();
-
-            System.out.println("Р’СЃРµ СЃРѕРѕР±С‰РµРЅРёСЏ РІРѕ РІС…РѕРґСЏС‰РёС… СѓРґР°Р»РµРЅС‹.");
-
-        }catch (Exception e){e.printStackTrace();}
     }
 
 }
