@@ -1,4 +1,5 @@
 # Test-Java-Mail-API
+Дока: https://www.demo2s.com/g/java/java.library.javamail.html
 
 ### Для настройки почты программы на mail.ru  понадобится информация:
 
